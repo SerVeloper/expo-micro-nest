@@ -17,7 +17,7 @@ export class CreateStudentInput {
 
   @Field()
   @IsNotEmpty()
-  lastName: string;
+  last_name: string;
 
   @Field()
   @IsEmail()
@@ -30,5 +30,5 @@ export class CreateStudentInput {
   @Field({ defaultValue: true })
   @IsBoolean()
   @IsOptional()
-  isActive?: boolean;
+  is_active?: boolean;
 }

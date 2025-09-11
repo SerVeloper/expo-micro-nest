@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 
 @ObjectType()
@@ -6,45 +13,45 @@ import { ObjectType, Field, Int } from '@nestjs/graphql';
 export class Student {
   @Field(() => Int)
   @PrimaryGeneratedColumn()
-  studentId: number;
+  student_id: number;
 
   @Field()
   @Column({ length: 20, unique: true })
-  ci: string;
+  ci?: string;
 
   @Field()
   @Column({ length: 20, unique: true })
-  cu: string;
+  cu?: string;
 
   @Field()
   @Column({ length: 100 })
-  name: string;
+  name?: string;
 
   @Field()
   @Column({ length: 100 })
-  lastName: string;
+  last_name?: string;
 
   @Field()
   @Column({ length: 100, unique: true })
-  email: string;
+  email?: string;
 
   @Field()
   @Column({ length: 20 })
-  phone: string;
+  phone?: string;
 
   @Field()
   @Column({ default: true })
-  isActive: boolean;
+  is_active?: boolean;
 
   @Field()
   @CreateDateColumn()
-  createAt: Date;
+  create_at?: Date;
 
   @Field()
   @UpdateDateColumn()
-  updateAt: Date;
+  update_at?: Date;
 
   @Field(() => Date, { nullable: true }) // Corrección aquí
   @DeleteDateColumn()
-  deleteAt: Date | null;
+  delete_at?: Date | null;
 }

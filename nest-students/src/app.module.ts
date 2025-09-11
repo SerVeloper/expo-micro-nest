@@ -10,8 +10,8 @@ import { StudentModule } from './student/student.module';
       type: 'postgres',
       host: 'localhost',
       port: 5432,
-      username: 'postgres',
-      password: '123456789',
+      username: 'serdev',
+      password: 'nifer2030',
       database: 'rest_db',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true, // Solo para desarrollo

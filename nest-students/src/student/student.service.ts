@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, IsNull, Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { Student } from './entities/student.entity';
 import { CreateStudentInput } from './dto/create-student.input';
 import { UpdateStudentInput } from './dto/update-student.input';
@@ -19,24 +19,25 @@ export class StudentService {
 
   async findAll(): Promise<Student[]> {
     return await this.studentRepository.find({
-      where: { deleteAt: IsNull() },
-      order: { createAt: 'DESC' },
+      where: { delete_at: IsNull() },
+      order: { create_at: 'DESC' },
     });
   }
 
   async findOne(id: number): Promise<Student> {
     const student = await this.studentRepository.findOne({
-      where: { studentId: id, deleteAt: IsNull() },
+      where: { student_id: id, delete_at: IsNull() },
     });
-    
     if (!student) {
       throw new NotFoundException(`Student with ID ${id} not found`);
     }
-    
     return student;
   }
 
-  async update(id: number, updateStudentInput: UpdateStudentInput): Promise<Student> {
+  async update(
+    id: number,
+    updateStudentInput: UpdateStudentInput,
+  ): Promise<Student> {
     const student = await this.findOne(id);
     Object.assign(student, updateStudentInput);
     return await this.studentRepository.save(student);
@@ -50,25 +51,21 @@ export class StudentService {
 
   async findByCI(ci: string): Promise<Student> {
     const student = await this.studentRepository.findOne({
-      where: { ci, deleteAt: IsNull() },
+      where: { ci, delete_at: IsNull() },
     });
-    
     if (!student) {
       throw new NotFoundException(`Student with CI ${ci} not found`);
     }
-    
     return student;
   }
 
   async findByEmail(email: string): Promise<Student> {
     const student = await this.studentRepository.findOne({
-      where: { email, deleteAt: IsNull() },
+      where: { email, delete_at: IsNull() },
     });
-    
     if (!student) {
       throw new NotFoundException(`Student with email ${email} not found`);
     }
-    
     return student;
   }
 }
