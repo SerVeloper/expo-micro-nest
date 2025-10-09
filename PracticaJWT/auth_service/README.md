@@ -106,7 +106,38 @@ curl -X POST http://127.0.0.1:8000/api/auth/token/refresh/ \
 }
 ```
 
-### 4. Acceder a Rutas Protegidas
+### 4. Verificar un Token y Obtener Datos del Usuario
+
+Este es el endpoint principal que otros microservicios deben usar para proteger sus rutas. Valida el token y, si es correcto, devuelve la información del usuario.
+
+-   **Endpoint:** `GET /api/auth/token/verify/`
+-   **Cabecera Requerida:** `Authorization: Bearer <access_token>`
+
+```bash
+curl -X GET http://127.0.0.1:8000/api/auth/token/verify/ \
+-H "Authorization: Bearer tu_token_de_acceso_aqui"
+```
+
+**Respuesta Exitosa (200 OK):**
+
+Si el token es válido, el servidor responderá con los datos del usuario.
+
+```json
+{
+    "id": 1,
+    "username": "admin",
+    "email": "admin@example.com",
+    "roles": [
+        "administrador"
+    ]
+}
+```
+
+**Respuesta de Error (401 Unauthorized):**
+
+Si el token no se provee, es inválido o ha expirado, el servidor responderá con un error `401`.
+
+### 5. Acceder a Rutas Protegidas
 
 Para acceder a rutas protegidas en otros microservicios, incluye el token de acceso en el encabezado `Authorization`.
 

@@ -3,10 +3,15 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class UserSerializer(serializers.ModelSerializer):
+    roles = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password')
+        fields = ('id', 'username', 'email', 'roles', 'password')
         extra_kwargs = {'password': {'write_only': True}}
+
+    def get_roles(self, obj):
+        return [group.name for group in obj.groups.all()]
 
     def create(self, validated_data):
         user = User.objects.create_user(
