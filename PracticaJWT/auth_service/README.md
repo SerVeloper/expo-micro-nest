@@ -62,9 +62,22 @@ El servicio estará disponible en:
 
 ---
 
-## 📡 Cómo Usar la API
 
-Puedes usar herramientas como **Postman** o **curl** para interactuar con los endpoints.
+## 🌐 Rutas principales
+
+| Método          | Endpoint                   | Descripción                            | Permisos            |
+| --------------- | -------------------------- | -------------------------------------- | ------------------- |
+| `POST`          | `/api/auth/register/`      | Registrar nuevo usuario                | Público             |
+| `POST`          | `/api/auth/token/`         | Obtener token JWT (login)              | Público             |
+| `POST`          | `/api/auth/token/refresh/` | Renovar token JWT                      | Público             |
+| `GET`           | `/api/auth/users/`         | Listar todos los usuarios              | Solo admin          |
+| `GET`           | `/api/auth/users/{id}/`    | Ver perfil de usuario                  | Admin o propietario |
+| `PUT` / `PATCH` | `/api/auth/users/{id}/`    | Actualizar usuario                     | Admin o propietario |
+| `DELETE`        | `/api/auth/users/{id}/`    | Eliminar lógicamente (is_active=False) | Admin o propietario |
+
+---
+
+## 🧪 Pruebas paso a paso en Postman
 
 ### 1️⃣ Registrar un Nuevo Usuario
 
@@ -146,8 +159,115 @@ POST /api/auth/token/refresh/
     "access": "nuevo_token_de_acceso_aqui"
 }
 ```
+---
+
+### 3️⃣ Ver perfil propio
+
+**Método:** `GET`
+**URL:** `http://127.0.0.1:8000/api/auth/users/2/`
+
+**Headers:**
+
+```
+Authorization: Bearer <ACCESS_TOKEN>
+```
+
+**Respuesta esperada:**
+
+```json
+{
+    "id": 2,
+    "username": "valeria",
+    "email": "valeria@example.com",
+    "roles": ["usuario"]
+}
+```
 
 ---
+
+### 4️⃣ Actualizar datos de usuario
+
+**Método:** `PUT`
+**URL:** `http://127.0.0.1:8000/api/auth/users/2/`
+
+**Headers:**
+
+```
+Authorization: Bearer <ACCESS_TOKEN>
+```
+
+**Body (JSON):**
+
+```json
+{
+    "email": "valeria_updated@example.com",
+    "password": "NuevaClaveSegura456"
+}
+```
+
+**Respuesta esperada:**
+
+```json
+{
+    "id": 2,
+    "username": "valeria",
+    "email": "valeria_updated@example.com",
+    "roles": ["usuario"]
+}
+```
+
+---
+
+### 5️⃣ Eliminar (lógicamente) usuario
+
+**Método:** `DELETE`
+**URL:** `http://127.0.0.1:8000/api/auth/users/2/`
+
+**Headers:**
+
+```
+Authorization: Bearer <ACCESS_TOKEN>
+```
+
+**Respuesta esperada:**
+
+```json
+{
+    "detail": "El usuario fue desactivado correctamente."
+}
+```
+
+---
+
+### 6️⃣ Listar usuarios (solo admin)
+
+**Método:** `GET`
+**URL:** `http://127.0.0.1:8000/api/auth/users/`
+
+**Headers:**
+
+```
+Authorization: Bearer <ACCESS_TOKEN_ADMIN>
+```
+
+**Respuesta esperada:**
+
+```json
+[
+    {
+        "id": 1,
+        "username": "admin",
+        "email": "admin@example.com",
+        "roles": ["admin"]
+    },
+    {
+        "id": 2,
+        "username": "valeria",
+        "email": "valeria@example.com",
+        "roles": ["usuario"]
+    }
+]
+```
 
 
 ## 🧾 Estructura del Token JWT
