@@ -149,16 +149,6 @@ POST /api/auth/token/refresh/
 
 ---
 
-### 5️⃣ Acceder a Rutas Protegidas en Otros Servicios
-
-Para consumir endpoints protegidos en otros microservicios, agrega tu token JWT en el encabezado `Authorization`:
-
-```bash
-curl -X GET http://<URL_DEL_OTRO_SERVICIO>/api/ruta_protegida/ \
--H "Authorization: Bearer tu_token_de_acceso_aqui"
-```
-
----
 
 ## 🧾 Estructura del Token JWT
 
