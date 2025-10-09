@@ -57,6 +57,4 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
         token['roles'] = [group.name for group in user.groups.all()]
-        token['username'] = user.username
-        token['email'] = user.email
         return token
