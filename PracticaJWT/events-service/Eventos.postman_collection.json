@@ -1,0 +1,175 @@
+{
+	"info": {
+		"_postman_id": "096b0451-54fa-432e-8baa-fce7d1fe73bf",
+		"name": "Eventos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39200431",
+		"_collection_link": "https://test88-3314.postman.co/workspace/grupo8-microservicios~4020ac42-7e4e-46d2-a600-071b0f6c1208/collection/39200431-096b0451-54fa-432e-8baa-fce7d1fe73bf?action=share&source=collection_link&creator=39200431"
+	},
+	"item": [
+		{
+			"name": "Obtener Eventos",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"testuser\",\r\n    \"email\": \"test@example.com\",\r\n    \"password\": \"password123\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/events",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener Un Evento",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"testuser\",\r\n    \"email\": \"test@example.com\",\r\n    \"password\": \"password123\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3001/events/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"events",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Eliminar Evento",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYwMDIxNDY4LCJpYXQiOjE3NjAwMTk2NjgsImp0aSI6ImMwZTQzNjA5MjhjNzQ0ODdhZjViZmFlZTRkNjMzYzFiIiwidXNlcl9pZCI6IjMiLCJyb2xlcyI6WyJhZG1pbiJdfQ.q-VDkvqQUcIJCOTz0QVkbz2qFAHKHXnjAkOyPKU838U",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:3001/events/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"events",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear Evento",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYwMDIxNDY4LCJpYXQiOjE3NjAwMTk2NjgsImp0aSI6ImMwZTQzNjA5MjhjNzQ0ODdhZjViZmFlZTRkNjMzYzFiIiwidXNlcl9pZCI6IjMiLCJyb2xlcyI6WyJhZG1pbiJdfQ.q-VDkvqQUcIJCOTz0QVkbz2qFAHKHXnjAkOyPKU838U",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Clasico Capitalino\",\r\n  \"date\": \"2025-11-11T20:00:00Z\",\r\n  \"place\": \"Estadio Patria\",\r\n  \"capacity\": 20000,\r\n  \"price\": 70.00\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/events",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Actualizar Evento",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYwMDIxNDY4LCJpYXQiOjE3NjAwMTk2NjgsImp0aSI6ImMwZTQzNjA5MjhjNzQ0ODdhZjViZmFlZTRkNjMzYzFiIiwidXNlcl9pZCI6IjMiLCJyb2xlcyI6WyJhZG1pbiJdfQ.q-VDkvqQUcIJCOTz0QVkbz2qFAHKHXnjAkOyPKU838U",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Clasico Capitalino\",\r\n  \"date\": \"2025-11-11T18:00:00Z\",\r\n  \"place\": \"Estadio Patria\",\r\n  \"capacity\": 20000,\r\n  \"price\": 70.00\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/events/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"events",
+						"4"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
