@@ -32,6 +32,12 @@ Asegúrate de que el entorno virtual esté activado y luego instala los paquetes
     python manage.py migrate
     ```
 
+5.  **Crear un Superusuario (Opcional pero recomendado para administración)**:
+    ```bash
+    python manage.py createsuperuser
+    ```
+    Sigue las instrucciones en pantalla para crear tu superusuario.
+
 ## Ejecutar el Servidor de Desarrollo
 
 Una vez completada la configuración, puedes iniciar el servidor de desarrollo:
@@ -48,7 +54,7 @@ Puedes usar herramientas como `curl` o Postman para interactuar con los endpoint
 
 ### 1. Registrar un Nuevo Usuario
 
-Realiza una petición `POST` a `/api/auth/register/` con los datos del nuevo usuario.
+Realiza una petición `POST` a `/api/auth/register/` con los datos del nuevo usuario. Por defecto, los usuarios registrados se asignarán automáticamente al grupo `usuario`.
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/auth/register/ \
@@ -109,3 +115,45 @@ curl -X GET http://<URL_DEL_OTRO_SERVICIO>/api/ruta_protegida/ \
 -H "Authorization: Bearer tu_token_de_acceso_aqui"
 ```
 
+## Estructura del Token JWT
+
+El token JWT emitido por este servicio incluye la siguiente información en su payload:
+
+*   `user_id`: El ID único del usuario.
+*   `exp`: Tiempo de expiración del token (por defecto 5 minutos para el token de acceso, 1 día para el de refresco).
+*   `iat`: Tiempo en que el token fue emitido.
+*   `jti`: ID único del token.
+*   `roles`: Una lista de los nombres de los grupos de Django a los que pertenece el usuario. Por ejemplo, `["usuario"]` o `["admin", "usuario"]`.
+
+## Gestión de Roles
+
+El sistema utiliza los grupos de Django para gestionar los roles de los usuarios.
+
+*   **Grupo `usuario`:** Se asigna automáticamente a cualquier usuario nuevo que se registra en el sistema.
+*   **Grupo `admin`:** Este grupo se crea automáticamente al iniciar la aplicación (gracias a la configuración en `user_auth/apps.py`).
+
+Para asignar el rol de `admin` a un usuario:
+
+1.  Asegúrate de que el servidor de desarrollo esté corriendo.
+2.  Accede al panel de administración de Django en `http://127.0.0.1:8000/admin/`.
+3.  Inicia sesión con un superusuario.
+4.  Navega a "Authentication and Authorization" -> "Users".
+5.  Selecciona el usuario al que deseas otorgar el rol de administrador.
+6.  En la sección "Groups", añade el grupo `admin` a la lista de grupos del usuario.
+7.  Guarda los cambios.
+
+Al obtener un nuevo token para este usuario, el campo `roles` en el JWT reflejará su pertenencia al grupo `admin`.
+
+## Consideraciones para el Desarrollo en Equipo
+
+*   **Base de Datos Local:** Se recomienda que cada miembro del equipo utilice su propia base de datos local. No incluyas el archivo `db.sqlite3` en el control de versiones para evitar conflictos.
+*   **Creación de Superusuarios:** Cada desarrollador deberá crear su propio superusuario (`python manage.py createsuperuser`) para acceder al panel de administración y gestionar usuarios/roles en su entorno local.
+*   **Grupos Automáticos:** Los grupos `usuario` y `admin` se crearán automáticamente en la base de datos de cada desarrollador al registrar usuarios o al iniciar la aplicación, respectivamente.
+
+## Tecnologías Utilizadas
+
+*   **Backend:** Python 3.x
+*   **Framework Web:** Django 5.x
+*   **API REST:** Django REST Framework
+*   **Autenticación:** djangorestframework-simplejwt
+*   **Base de Datos:** SQLite (por defecto en desarrollo)
