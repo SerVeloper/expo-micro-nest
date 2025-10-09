@@ -1,8 +1,4 @@
-Perfecto 💪 Valeria, aquí tienes el **README.md** completo, con el mismo formato y redacción que pediste, adaptado **exactamente a tu microservicio**, incluyendo el prefijo de rutas correcto (`/api/auth/`) y tus detalles reales en Django con JWT 👇
-
----
-
-# 🧩 Microservicio de Autenticación y Autorización
+# Microservicio de Autenticación y Autorización
 
 Este microservicio gestiona el registro y la autenticación de usuarios para el sistema de venta de entradas.
 Utiliza **Django**, **Django REST Framework** y **Simple JWT** para proporcionar endpoints seguros basados en **JSON Web Tokens (JWT)**.
