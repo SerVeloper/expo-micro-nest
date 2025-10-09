@@ -79,7 +79,7 @@ El servicio estará disponible en:
 
 ## 🧪 Pruebas paso a paso en Postman
 
-### 1️⃣ Registrar un Nuevo Usuario
+### Registrar un Nuevo Usuario
 
 Realiza una petición `POST` a:
 
@@ -112,7 +112,7 @@ POST /api/auth/register/
 
 ---
 
-### 2️⃣ Obtener un Token JWT (Iniciar Sesión)
+### Obtener un Token JWT (Iniciar Sesión)
 
 ```
 POST /api/auth/token/
@@ -138,7 +138,7 @@ POST /api/auth/token/
 
 ---
 
-### 3️⃣ Refrescar un Token de Acceso
+### Refrescar un Token de Acceso
 
 ```
 POST /api/auth/token/refresh/
@@ -161,7 +161,7 @@ POST /api/auth/token/refresh/
 ```
 ---
 
-### 3️⃣ Ver perfil propio
+### Ver un usuario
 
 **Método:** `GET`
 **URL:** `http://127.0.0.1:8000/api/auth/users/2/`
@@ -185,7 +185,7 @@ Authorization: Bearer <ACCESS_TOKEN>
 
 ---
 
-### 4️⃣ Actualizar datos de usuario
+### Actualizar datos de usuario
 
 **Método:** `PUT`
 **URL:** `http://127.0.0.1:8000/api/auth/users/2/`
@@ -218,7 +218,7 @@ Authorization: Bearer <ACCESS_TOKEN>
 
 ---
 
-### 5️⃣ Eliminar (lógicamente) usuario
+### Eliminar (lógicamente) usuario
 
 **Método:** `DELETE`
 **URL:** `http://127.0.0.1:8000/api/auth/users/2/`
@@ -239,7 +239,7 @@ Authorization: Bearer <ACCESS_TOKEN>
 
 ---
 
-### 6️⃣ Listar usuarios (solo admin)
+### Listar usuarios (solo admin)
 
 **Método:** `GET`
 **URL:** `http://127.0.0.1:8000/api/auth/users/`
@@ -281,6 +281,7 @@ El token JWT emitido por este microservicio incluye los siguientes datos en su *
 | `iat`     | Tiempo en que el token fue emitido                                     |
 | `jti`     | Identificador único del token                                          |
 | `roles`   | Lista de roles asignados al usuario (`["usuario"]`, `["admin"]`, etc.) |
+
 
 ---
 
