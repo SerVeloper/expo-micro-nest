@@ -19,43 +19,46 @@ const dbConfig = {
 
 const RABBITMQ_URL = process.env.RABBITMQ_URL;
 const EVENTS_SERVICE_URL = process.env.EVENTS_SERVICE_URL;
+const QUEUE_NAME = 'emails_queue';
 
 async function getDBConnection() {
     return await mysql.createConnection(dbConfig);
 }
 
-// Agrega esto ANTES del middleware authenticateToken
-app.use((req, res, next) => {
-    console.log('🔍 Headers recibidos:', req.headers);
-    next();
-});
-
-// Endpoint para debug del token
-app.post('/debug-token', (req, res) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    
-    if (!token) {
-        return res.status(400).json({ error: 'No token provided' });
-    }
-    
+// Función para enviar correos a la cola (CON CONFIRMACIÓN)
+async function sendEmailToQueue(emailData) {
+    let connection;
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        res.json({
-            tokenReceived: true,
-            decodedUser: decoded,
-            keys: Object.keys(decoded)
+        connection = await amqp.connect(RABBITMQ_URL);
+        
+        // Usar createConfirmChannel para confirmación de entrega
+        const channel = await connection.createConfirmChannel(); 
+
+        await channel.assertQueue(QUEUE_NAME, { durable: true });
+
+        const message = JSON.stringify(emailData);
+
+        // Envío del mensaje
+        channel.publish('', QUEUE_NAME, Buffer.from(message), {
+            persistent: true // Mensaje persistente
         });
+
+        // Esperar confirmación de RabbitMQ
+        await channel.waitForConfirms(); 
+
+        console.log(`✅ CORREO ENVIADO Y CONFIRMADO a la cola: ${emailData.subject}`);
+
     } catch (error) {
-        res.status(401).json({ 
-            error: 'Invalid token', 
-            message: error.message 
-        });
+        console.error("❌ Error al conectar o enviar a RabbitMQ:", error);
+        throw error; // Relanzar el error para manejarlo en el llamador
+    } finally {
+        if (connection) {
+            await connection.close(); 
+        }
     }
-});
+}
 
 // Middleware de autenticación
-// Middleware de autenticación CORREGIDO
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -77,18 +80,161 @@ const authenticateToken = (req, res, next) => {
         
         console.log('✅ Token decodificado:', decoded);
         
-        // Asegurar que userId exista (compatibilidad con diferentes estructuras)
         req.user = {
             userId: decoded.userId || decoded.id || decoded.user_id,
             email: decoded.email,
-            name: decoded.username ,
-            //role: decoded.role
+            name: decoded.username,
         };
         
         console.log('👤 Usuario extraído:', req.user);
         next();
     });
 };
+
+// Procesar pago - VERSIÓN ACTUALIZADA CON ENVÍO DE CORREO
+app.post('/orders/:id/pay', authenticateToken, async (req, res) => {
+    let connection;
+    try {
+        const orderId = req.params.id;
+        console.log(`💰 Procesando pago para orden: ${orderId}`);
+        
+        connection = await getDBConnection();
+
+        // Obtener la orden
+        const [orders] = await connection.execute(
+            'SELECT * FROM orders WHERE id = ? AND user_id = ?',
+            [orderId, req.user.userId]
+        );
+
+        if (orders.length === 0) {
+            await connection.end();
+            return res.status(404).json({ error: 'Orden no encontrada' });
+        }
+
+        const order = orders[0];
+        console.log('📦 Orden encontrada:', order);
+
+        if (order.status !== 'pending') {
+            await connection.end();
+            return res.status(400).json({ error: 'La orden ya ha sido procesada' });
+        }
+
+        // SIMULAR procesamiento de pago
+        console.log('💳 Simulando procesamiento de pago...');
+        
+        // Actualizar estado a pagado
+        await connection.execute(
+            'UPDATE orders SET status = "paid" WHERE id = ?',
+            [orderId]
+        );
+
+        // SIMULAR actualización de disponibilidad en servicio de eventos
+        console.log(`📊 Evento ${order.event_id}: Reduciendo ${order.quantity} tickets`);
+
+        // Obtener información del evento para el correo
+        let eventInfo = { name: 'Evento', date: 'Fecha no disponible' };
+        try {
+            const eventResponse = await fetch(`${EVENTS_SERVICE_URL}/events/${order.event_id}`);
+            if (eventResponse.ok) {
+                eventInfo = await eventResponse.json();
+            }
+        } catch (error) {
+            console.warn('⚠️ No se pudo obtener información del evento para el correo:', error.message);
+        }
+
+        // ENVÍO DE CORREO DE CONFIRMACIÓN
+        console.log('📧 Preparando correo de confirmación...');
+        const emailData = {
+            to: req.user.email,
+            subject: `✅ Confirmación de Compra - Orden #${order.id}`,
+            body: `
+            <h1>¡Gracias por tu compra, ${req.user.name}!</h1>
+            <p>Tu orden ha sido procesada exitosamente.</p>
+            
+            <h2>Detalles de tu compra:</h2>
+            <ul>
+                <li><strong>Número de orden:</strong> #${order.id}</li>
+                <li><strong>Evento:</strong> ${eventInfo.name}</li>
+                <li><strong>Fecha del evento:</strong> ${eventInfo.date}</li>
+                <li><strong>Cantidad de tickets:</strong> ${order.quantity}</li>
+                <li><strong>Total pagado:</strong> $${order.total_amount}</li>
+                <li><strong>Fecha de compra:</strong> ${new Date().toLocaleDateString()}</li>
+            </ul>
+            
+            <p>Guarda este correo como comprobante de tu compra.</p>
+            <p>¡Esperamos que disfrutes el evento!</p>
+            
+            <hr>
+            <p><small>Si tienes alguna pregunta, por favor contacta a nuestro soporte.</small></p>
+            `,
+            type: 'ORDER_CONFIRMATION',
+            orderId: order.id,
+            userId: req.user.userId,
+            userName: req.user.name
+        };
+
+        // Enviar correo a la cola
+        await sendEmailToQueue(emailData);
+        console.log('✅ Correo de confirmación enviado a la cola');
+
+        // Enviar notificación adicional a la cola de notificaciones (opcional)
+        console.log('📨 Enviando notificación adicional a RabbitMQ...');
+        try {
+            const connectionMQ = await amqp.connect(RABBITMQ_URL);
+            const channel = await connectionMQ.createChannel();
+            
+            await channel.assertQueue('notifications');
+            
+            const notification = {
+                type: 'ORDER_PAID',
+                orderId: order.id,
+                userId: order.user_id,
+                eventId: order.event_id,
+                quantity: order.quantity,
+                totalAmount: order.total_amount,
+                timestamp: new Date().toISOString(),
+                userEmail: req.user.email,
+                userName: req.user.name
+            };
+
+            channel.sendToQueue('notifications', Buffer.from(JSON.stringify(notification)));
+            
+            await channel.close();
+            await connectionMQ.close();
+            console.log('✅ Notificación adicional enviada a RabbitMQ');
+        } catch (mqError) {
+            console.warn('⚠️ Error enviando notificación adicional (continuando):', mqError.message);
+        }
+
+        await connection.end();
+
+        res.json({ 
+            message: 'Pago procesado exitosamente',
+            order: {
+                id: order.id,
+                status: 'paid',
+                total_amount: order.total_amount,
+                quantity: order.quantity,
+                event_id: order.event_id
+            },
+            emailSent: true,
+            notification: 'Correo de confirmación enviado al sistema'
+        });
+
+    } catch (error) {
+        console.error('💥 Error procesando pago:', error);
+        if (connection) {
+            await connection.end();
+        }
+        res.status(500).json({ 
+            error: 'Error procesando el pago',
+            details: error.message,
+            emailSent: false
+        });
+    }
+});
+
+// ... (el resto de tus endpoints permanecen igual)
 
 // Crear orden
 app.post('/orders', authenticateToken, async (req, res) => {
@@ -135,117 +281,6 @@ app.post('/orders', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error creando orden:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
-    }
-});
-
-// Procesar pago
-// Procesar pago - CON SIMULACIÓN DE SERVICIO DE EVENTOS
-app.post('/orders/:id/pay', authenticateToken, async (req, res) => {
-    let connection;
-    try {
-        const orderId = req.params.id;
-        console.log(`💰 Procesando pago para orden: ${orderId}`);
-        
-        connection = await getDBConnection();
-
-        // Obtener la orden
-        const [orders] = await connection.execute(
-            'SELECT * FROM orders WHERE id = ? AND user_id = ?',
-            [orderId, req.user.userId]
-        );
-
-        if (orders.length === 0) {
-            await connection.end();
-            return res.status(404).json({ error: 'Orden no encontrada' });
-        }
-
-        const order = orders[0];
-        console.log('📦 Orden encontrada:', order);
-
-        if (order.status !== 'pending') {
-            await connection.end();
-            return res.status(400).json({ error: 'La orden ya ha sido procesada' });
-        }
-
-        // SIMULAR procesamiento de pago (sin llamar al servicio externo)
-        console.log('💳 Simulando procesamiento de pago...');
-        
-        // Actualizar estado a pagado
-        await connection.execute(
-            'UPDATE orders SET status = "paid" WHERE id = ?',
-            [orderId]
-        );
-
-        // SIMULAR actualización de disponibilidad en servicio de eventos
-        console.log('🎭 Simulando actualización en servicio de eventos...');
-        console.log(`📊 Evento ${order.event_id}: Reduciendo ${order.quantity} tickets`);
-        
-        // Aquí iría la llamada real al servicio de eventos cuando esté listo:
-        /*
-        const updateResponse = await fetch(`${EVENTS_SERVICE_URL}/events/${order.event_id}/tickets`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ quantity: order.quantity })
-        });
-
-        if (!updateResponse.ok) {
-            throw new Error('Error actualizando disponibilidad');
-        }
-        */
-
-        // Enviar notificación a la cola
-        console.log('📨 Enviando notificación a RabbitMQ...');
-        try {
-            const connectionMQ = await amqp.connect(RABBITMQ_URL);
-            const channel = await connectionMQ.createChannel();
-            
-            await channel.assertQueue('notifications');
-            
-            const notification = {
-                type: 'ORDER_PAID',
-                orderId: order.id,
-                userId: order.user_id,
-                eventId: order.event_id,
-                quantity: order.quantity,
-                totalAmount: order.total_amount,
-                timestamp: new Date().toISOString(),
-                userEmail: req.user.email,
-                userName: req.user.name
-            };
-
-            channel.sendToQueue('notifications', Buffer.from(JSON.stringify(notification)));
-            
-            await channel.close();
-            await connectionMQ.close();
-            console.log('✅ Notificación enviada a RabbitMQ');
-        } catch (mqError) {
-            console.warn('⚠️ Error enviando a RabbitMQ (continuando):', mqError.message);
-            // No detenemos el flujo principal por error en RabbitMQ
-        }
-
-        await connection.end();
-
-        res.json({ 
-            message: 'Pago procesado exitosamente',
-            order: {
-                id: order.id,
-                status: 'paid',
-                total_amount: order.total_amount,
-                quantity: order.quantity,
-                event_id: order.event_id
-            },
-            notification: 'Notificación enviada al sistema'
-        });
-
-    } catch (error) {
-        console.error('💥 Error procesando pago:', error);
-        if (connection) {
-            await connection.end();
-        }
-        res.status(500).json({ 
-            error: 'Error procesando el pago',
-            details: error.message 
-        });
     }
 });
 
