@@ -23,6 +23,13 @@
       >
         Mis Compras
       </button>
+
+      <button
+        @click="$emit('logout')"
+        class="text-left px-4 py-2 rounded hover:bg-gray-700 transition mt-auto"
+      >
+        Cerrar Sesión
+      </button>
     </nav>
   </aside>
 </template>

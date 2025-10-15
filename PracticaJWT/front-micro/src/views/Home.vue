@@ -7,17 +7,10 @@
 
       <div class="flex flex-col sm:flex-row gap-6 justify-center">
         <button
-          @click="goAdmin"
-          class="px-8 py-4 bg-green-600 hover:bg-green-700 rounded-lg font-semibold text-white text-lg transition-all"
-        >
-          Panel Administrador
-        </button>
-
-        <button
-          @click="goClient"
+          @click="goLogin"
           class="px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold text-white text-lg transition-all"
         >
-          Panel Cliente
+          Iniciar Sesión
         </button>
       </div>
     </div>
@@ -29,6 +22,5 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const goAdmin = () => router.push('/admin')
-const goClient = () => router.push('/client')
+const goLogin = () => router.push('/login')
 </script>

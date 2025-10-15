@@ -17,10 +17,18 @@
 
 <script setup>
 import Toolbar from '@/components/Toolbar.vue'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
+
+const authStore = useAuthStore()
+const router = useRouter()
 
 const goHome = () => console.log('Volver al inicio')
 const goProfile = () => console.log('Ir al perfil')
-const logout = () => console.log('Cerrar sesión')
+const logout = () => {
+  authStore.logout()
+  router.push('/login')
+}
 </script>
 
 <style scoped>

@@ -27,6 +27,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]
+
+
 
 # Application definition
 
@@ -40,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'user_auth',
     'rest_framework_simplejwt',
+    'corsheaders',
 ]
 
 from datetime import timedelta
@@ -51,6 +58,7 @@ SIMPLE_JWT = {
 
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
