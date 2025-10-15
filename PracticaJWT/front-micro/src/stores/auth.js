@@ -46,5 +46,18 @@ export const useAuthStore = defineStore('auth', {
       localStorage.removeItem('token')
       delete axios.defaults.headers.common['Authorization']
     },
+    async register(username, email, password) {
+      try {
+        await axios.post('http://127.0.0.1:8000/api/auth/register/', {
+          username,
+          email,
+          password,
+        })
+        return true
+      } catch (error) {
+        console.error('Error en el registro:', error)
+        return false
+      }
+    },
   },
 })

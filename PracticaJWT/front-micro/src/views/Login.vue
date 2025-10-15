@@ -88,6 +88,15 @@
           ← Volver al inicio
         </button>
 
+        <div class="text-center mt-6">
+          <p class="text-gray-400 text-sm">
+            ¿No tienes una cuenta?
+            <button @click="goToRegister" class="font-semibold text-blue-400 hover:text-blue-300 transition">
+              Regístrate aquí
+            </button>
+          </p>
+        </div>
+
         <p class="text-gray-500 text-xs mt-8">
           © 2025 Venta de Tickets. Todos los derechos reservados.
         </p>
@@ -136,4 +145,5 @@ const login = async () => {
 }
 
 const goHome = () => router.push('/')
+const goToRegister = () => router.push('/register')
 </script>

@@ -3,11 +3,13 @@ import Home from '@/views/Home.vue'
 import PanelAdmin from '@/views/PanelAdmin.vue'
 import PanelClient from '@/views/PanelClient.vue'
 import Login from '@/views/Login.vue'
+import Register from '@/views/Register.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
   { path: '/login', name: 'Login', component: Login },
+  { path: '/register', name: 'Register', component: Register },
   {
     path: '/admin',
     name: 'Admin',
