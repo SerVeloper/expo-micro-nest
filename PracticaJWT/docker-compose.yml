@@ -1,0 +1,11 @@
+# docker-compose.yml
+version: '3.8'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"    # Puerto para la aplicación
+      - "15672:15672"  # Puerto para la interfaz web de management
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest

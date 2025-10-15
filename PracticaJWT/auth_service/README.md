@@ -1,44 +1,55 @@
 # Microservicio de Autenticación y Autorización
 
-Este microservicio gestiona el registro y la autenticación de usuarios para el sistema de venta de entradas. Utiliza Django, Django REST Framework y Simple JWT para proporcionar endpoints seguros basados en JSON Web Tokens (JWT).
+Este microservicio gestiona el registro y la autenticación de usuarios para el sistema de venta de entradas.
+Utiliza **Django**, **Django REST Framework** y **Simple JWT** para proporcionar endpoints seguros basados en **JSON Web Tokens (JWT)**.
 
-## Configuración del Entorno
+---
 
-1.  **Clonar el repositorio y navegar al directorio `auth_service`**:
-    ```bash
-    cd auth_service
-    ```
+## ⚙️ Configuración del Entorno
 
-2.  **Crear y activar un entorno virtual**:
-    ```bash
-    # En Windows
-    python -m venv venv
-    .\venv\Scripts\activate
+1. **Clonar el repositorio y navegar al directorio `auth_service`:**
 
-    # En macOS/Linux
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
+   ```bash
+   cd auth_service
+   ```
 
-3.  **Instalar las dependencias**:
-Asegúrate de que el entorno virtual esté activado y luego instala los paquetes requeridos.
-    ```bash
-    pip install -r requirements.txt
-    ```
+2. **Crear y activar un entorno virtual:**
 
-4.  **Aplicar las migraciones de la base de datos**:
-    Esto creará la base de datos SQLite y las tablas necesarias.
-    ```bash
-    python manage.py migrate
-    ```
+   ```bash
+   # En Windows
+   python -m venv venv
+   .\venv\Scripts\activate
 
-5.  **Crear un Superusuario (Opcional pero recomendado para administración)**:
-    ```bash
-    python manage.py createsuperuser
-    ```
-    Sigue las instrucciones en pantalla para crear tu superusuario.
+   # En macOS/Linux
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
 
-## Ejecutar el Servidor de Desarrollo
+3. **Instalar las dependencias:**
+   Asegúrate de que el entorno virtual esté activado y luego instala los paquetes requeridos.
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Aplicar las migraciones de la base de datos:**
+   Esto creará la base de datos SQLite y las tablas necesarias.
+
+   ```bash
+   python manage.py migrate
+   ```
+
+5. **Crear un Superusuario (opcional pero recomendado para administración):**
+
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+   Sigue las instrucciones en pantalla para crear tu superusuario.
+
+---
+
+## ▶️ Ejecutar el Servidor de Desarrollo
 
 Una vez completada la configuración, puedes iniciar el servidor de desarrollo:
 
@@ -46,40 +57,78 @@ Una vez completada la configuración, puedes iniciar el servidor de desarrollo:
 python manage.py runserver
 ```
 
-El servicio estará disponible en `http://127.0.0.1:8000`.
+El servicio estará disponible en:
+👉 `http://127.0.0.1:8000`
 
-## Cómo Usar la API
+---
 
-Puedes usar herramientas como `curl` o Postman para interactuar con los endpoints de la API.
 
-### 1. Registrar un Nuevo Usuario
+## 🌐 Rutas principales
 
-Realiza una petición `POST` a `/api/auth/register/` con los datos del nuevo usuario. Por defecto, los usuarios registrados se asignarán automáticamente al grupo `usuario`.
+| Método          | Endpoint                   | Descripción                            | Permisos            |
+| --------------- | -------------------------- | -------------------------------------- | ------------------- |
+| `POST`          | `/api/auth/register/`      | Registrar nuevo usuario                | Público             |
+| `POST`          | `/api/auth/token/`         | Obtener token JWT (login)              | Público             |
+| `POST`          | `/api/auth/token/refresh/` | Renovar token JWT                      | Público             |
+| `GET`           | `/api/auth/users/`         | Listar todos los usuarios              | Solo admin          |
+| `GET`           | `/api/auth/users/{id}/`    | Ver perfil de usuario                  | Admin o propietario |
+| `PUT` / `PATCH` | `/api/auth/users/{id}/`    | Actualizar usuario                     | Admin o propietario |
+| `DELETE`        | `/api/auth/users/{id}/`    | Eliminar lógicamente (is_active=False) | Admin o propietario |
 
-```bash
-curl -X POST http://127.0.0.1:8000/api/auth/register/ \
--H "Content-Type: application/json" \
-    -d '''{
-        "username": "nuevo_usuario",
-        "email": "usuario@example.com",
-        "password": "password_segura_123"
-    }'''
+---
+
+## 🧪 Pruebas paso a paso en Postman
+
+### Registrar un Nuevo Usuario
+
+Realiza una petición `POST` a:
+
+```
+POST /api/auth/register/
 ```
 
-### 2. Obtener un Token JWT (Iniciar Sesión)
+**Body (JSON):**
 
-Realiza una petición `POST` a `/api/auth/token/` para autenticarte y recibir tus tokens de acceso y refresco.
-
-```bash
-curl -X POST http://127.0.0.1:8000/api/auth/token/ \
--H "Content-Type: application/json" \
--d '''{
+```json
+{
     "username": "nuevo_usuario",
+    "email": "usuario@example.com",
     "password": "password_segura_123"
-}'''
+}
 ```
 
 **Respuesta esperada:**
+
+```json
+{
+    "id": 1,
+    "username": "nuevo_usuario",
+    "email": "usuario@example.com",
+    "roles": ["usuario"]
+}
+```
+
+> 🔹 Por defecto, los usuarios se asignan automáticamente al grupo **usuario**.
+
+---
+
+### Obtener un Token JWT (Iniciar Sesión)
+
+```
+POST /api/auth/token/
+```
+
+**Body (JSON):**
+
+```json
+{
+    "username": "nuevo_usuario",
+    "password": "password_segura_123"
+}
+```
+
+**Respuesta esperada:**
+
 ```json
 {
     "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -87,104 +136,199 @@ curl -X POST http://127.0.0.1:8000/api/auth/token/ \
 }
 ```
 
-### 3. Refrescar un Token de Acceso
+---
 
-Usa el token de refresco para obtener un nuevo token de acceso cuando el actual expire.
+### Refrescar un Token de Acceso
 
-```bash
-curl -X POST http://127.0.0.1:8000/api/auth/token/refresh/ \
--H "Content-Type: application/json" \
--d '''{
+```
+POST /api/auth/token/refresh/
+```
+
+**Body (JSON):**
+
+```json
+{
     "refresh": "tu_token_de_refresco_aqui"
-}'''
+}
 ```
 
 **Respuesta esperada:**
-```json
-{
-    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-### 4. Verificar un Token y Obtener Datos del Usuario
-
-Este es el endpoint principal que otros microservicios deben usar para proteger sus rutas. Valida el token y, si es correcto, devuelve la información del usuario.
-
--   **Endpoint:** `GET /api/auth/token/verify/`
--   **Cabecera Requerida:** `Authorization: Bearer <access_token>`
-
-```bash
-curl -X GET http://127.0.0.1:8000/api/auth/token/verify/ \
--H "Authorization: Bearer tu_token_de_acceso_aqui"
-```
-
-**Respuesta Exitosa (200 OK):**
-
-Si el token es válido, el servidor responderá con los datos del usuario.
 
 ```json
 {
-    "id": 1,
-    "username": "admin",
-    "email": "admin@example.com",
-    "roles": [
-        "administrador"
-    ]
+    "access": "nuevo_token_de_acceso_aqui"
+}
+```
+---
+
+### Ver un usuario
+
+**Método:** `GET`
+**URL:** `http://127.0.0.1:8000/api/auth/users/2/`
+
+**Headers:**
+
+```
+Authorization: Bearer <ACCESS_TOKEN>
+```
+
+**Respuesta esperada:**
+
+```json
+{
+    "id": 2,
+    "username": "valeria",
+    "email": "valeria@example.com",
+    "roles": ["usuario"]
 }
 ```
 
-**Respuesta de Error (401 Unauthorized):**
+---
 
-Si el token no se provee, es inválido o ha expirado, el servidor responderá con un error `401`.
+### Actualizar datos de usuario
 
-### 5. Acceder a Rutas Protegidas
+**Método:** `PUT`
+**URL:** `http://127.0.0.1:8000/api/auth/users/2/`
 
-Para acceder a rutas protegidas en otros microservicios, incluye el token de acceso en el encabezado `Authorization`.
+**Headers:**
 
-```bash
-curl -X GET http://<URL_DEL_OTRO_SERVICIO>/api/ruta_protegida/ \
--H "Authorization: Bearer tu_token_de_acceso_aqui"
+```
+Authorization: Bearer <ACCESS_TOKEN>
 ```
 
-## Estructura del Token JWT
+**Body (JSON):**
 
-El token JWT emitido por este servicio incluye la siguiente información en su payload:
+```json
+{
+    "email": "valeria_updated@example.com",
+    "password": "NuevaClaveSegura456"
+}
+```
 
-*   `user_id`: El ID único del usuario.
-*   `exp`: Tiempo de expiración del token (por defecto 5 minutos para el token de acceso, 1 día para el de refresco).
-*   `iat`: Tiempo en que el token fue emitido.
-*   `jti`: ID único del token.
-*   `roles`: Una lista de los nombres de los grupos de Django a los que pertenece el usuario. Por ejemplo, `["usuario"]` o `["admin", "usuario"]`.
+**Respuesta esperada:**
 
-## Gestión de Roles
+```json
+{
+    "id": 2,
+    "username": "valeria",
+    "email": "valeria_updated@example.com",
+    "roles": ["usuario"]
+}
+```
 
-El sistema utiliza los grupos de Django para gestionar los roles de los usuarios.
+---
 
-*   **Grupo `usuario`:** Se asigna automáticamente a cualquier usuario nuevo que se registra en el sistema.
-*   **Grupo `admin`:** Este grupo se crea automáticamente al iniciar la aplicación (gracias a la configuración en `user_auth/apps.py`).
+### Eliminar (lógicamente) usuario
 
-Para asignar el rol de `admin` a un usuario:
+**Método:** `DELETE`
+**URL:** `http://127.0.0.1:8000/api/auth/users/2/`
 
-1.  Asegúrate de que el servidor de desarrollo esté corriendo.
-2.  Accede al panel de administración de Django en `http://127.0.0.1:8000/admin/`.
-3.  Inicia sesión con un superusuario.
-4.  Navega a "Authentication and Authorization" -> "Users".
-5.  Selecciona el usuario al que deseas otorgar el rol de administrador.
-6.  En la sección "Groups", añade el grupo `admin` a la lista de grupos del usuario.
-7.  Guarda los cambios.
+**Headers:**
 
-Al obtener un nuevo token para este usuario, el campo `roles` en el JWT reflejará su pertenencia al grupo `admin`.
+```
+Authorization: Bearer <ACCESS_TOKEN>
+```
 
-## Consideraciones para el Desarrollo en Equipo
+**Respuesta esperada:**
 
-*   **Base de Datos Local:** Se recomienda que cada miembro del equipo utilice su propia base de datos local. No incluyas el archivo `db.sqlite3` en el control de versiones para evitar conflictos.
-*   **Creación de Superusuarios:** Cada desarrollador deberá crear su propio superusuario (`python manage.py createsuperuser`) para acceder al panel de administración y gestionar usuarios/roles en su entorno local.
-*   **Grupos Automáticos:** Los grupos `usuario` y `admin` se crearán automáticamente en la base de datos de cada desarrollador al registrar usuarios o al iniciar la aplicación, respectivamente.
+```json
+{
+    "detail": "El usuario fue desactivado correctamente."
+}
+```
 
-## Tecnologías Utilizadas
+---
 
-*   **Backend:** Python 3.x
-*   **Framework Web:** Django 5.x
-*   **API REST:** Django REST Framework
-*   **Autenticación:** djangorestframework-simplejwt
-*   **Base de Datos:** SQLite (por defecto en desarrollo)
+### Listar usuarios (solo admin)
+
+**Método:** `GET`
+**URL:** `http://127.0.0.1:8000/api/auth/users/`
+
+**Headers:**
+
+```
+Authorization: Bearer <ACCESS_TOKEN_ADMIN>
+```
+
+**Respuesta esperada:**
+
+```json
+[
+    {
+        "id": 1,
+        "username": "admin",
+        "email": "admin@example.com",
+        "roles": ["admin"]
+    },
+    {
+        "id": 2,
+        "username": "valeria",
+        "email": "valeria@example.com",
+        "roles": ["usuario"]
+    }
+]
+```
+
+
+## 🧾 Estructura del Token JWT
+
+El token JWT emitido por este microservicio incluye los siguientes datos en su **payload**:
+
+| Campo     | Descripción                                                            |
+| --------- | ---------------------------------------------------------------------- |
+| `user_id` | ID único del usuario                                                   |
+| `exp`     | Tiempo de expiración del token                                         |
+| `iat`     | Tiempo en que el token fue emitido                                     |
+| `jti`     | Identificador único del token                                          |
+| `roles`   | Lista de roles asignados al usuario (`["usuario"]`, `["admin"]`, etc.) |
+
+
+---
+
+## 🧩 Gestión de Roles
+
+El sistema utiliza los **grupos de Django** para definir roles:
+
+* **`usuario`** → Asignado automáticamente a todo nuevo registro.
+* **`admin`** → Se crea automáticamente cuando se inicia la aplicación.
+
+### 🧠 Para asignar el rol de administrador:
+
+1. Inicia el servidor (`python manage.py runserver`).
+2. Accede a `http://127.0.0.1:8000/admin/`.
+3. Inicia sesión con tu superusuario.
+4. Ve a **Authentication and Authorization → Users**.
+5. Selecciona el usuario al que deseas darle permisos de administrador.
+6. En la sección **Groups**, añade el grupo `admin`.
+7. Guarda los cambios.
+
+> Cuando este usuario inicie sesión nuevamente, su token incluirá `"roles": ["admin"]`.
+
+---
+
+## 👥 Consideraciones para el Desarrollo en Equipo
+
+* Cada desarrollador debe tener su propia base de datos local.
+  No incluyas el archivo `db.sqlite3` en el control de versiones.
+* Cada uno debe crear su propio superusuario con:
+
+  ```bash
+  python manage.py createsuperuser
+  ```
+* Los grupos `usuario` y `admin` se crean automáticamente al iniciar la app o registrar usuarios.
+
+---
+
+## 🧰 Tecnologías Utilizadas
+
+* **Backend:** Python 3.x
+* **Framework Web:** Django 5.x
+* **API REST:** Django REST Framework
+* **Autenticación:** djangorestframework-simplejwt
+* **Base de Datos:** SQLite (por defecto en desarrollo)
+
+---
+
+¿Quieres que te agregue al final un apartado de “🧪 Pruebas en Postman” con ejemplos de request/response listos para importar o copiar en Postman?
+Puedo incluir las rutas CRUD (`/api/auth/users/`) y los encabezados `Authorization` ya configurados.
+
