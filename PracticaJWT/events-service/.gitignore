@@ -1,0 +1,51 @@
+# -------------------------------------------------------------------
+# DIRECTORIOS Y ARCHIVOS GENERADOS
+# -------------------------------------------------------------------
+
+# Dependencias de Node (archivos pesados y generados)
+/node_modules
+
+# Logs y archivos de compilación/transpilación (si usas Babel/TypeScript)
+/logs
+/dist
+/build
+/tmp
+
+# Archivos de caché
+.npm
+.eslintcache
+
+# Archivo de bloqueo de yarn, npm o pnpm (si usas la opción install --lock-only)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# -------------------------------------------------------------------
+# ARCHIVOS DE ENTORNO Y SEGURIDAD (CRUCIALES)
+# -------------------------------------------------------------------
+
+# Archivo de variables de entorno (contiene claves secretas, contraseñas de DB, JWT secrets, etc.)
+.env
+.env.*
+!.env.example # Permite subir una plantilla (opcional)
+
+# Claves de seguridad o certificados SSL
+*.key
+*.pem
+*.crt
+
+# Archivos de depuración y dumps
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.tap/
+*.tgz
+.DS_Store # Archivos específicos de macOS
+
+# -------------------------------------------------------------------
+# INTEGRACIÓN CONTINUA Y DESPLIEGUE (CI/CD)
+# -------------------------------------------------------------------
+
+# Archivos de despliegue y configuraciones específicas
+/coverage
+.nyc_output/
