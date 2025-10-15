@@ -8,7 +8,7 @@ import eventsRouter from './routes/events';
 dotenv.config();
 
 const app: Application = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 
 // Inicializar TypeORM
 const initializeDataSource = async (): Promise<void> => {
