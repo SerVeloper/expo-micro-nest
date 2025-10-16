@@ -7,7 +7,7 @@
       class="bg-gray-900 text-white"
     />
 
-    <!-- Contenido principal -->
+    <!-- Contenido principal según subruta -->
     <main class="flex-1 p-6">
       <h2 class="text-3xl font-bold mb-4">Panel del Cliente</h2>
       <p v-if="currentView === 'events'">Aquí se mostrarán los eventos.</p>

@@ -1,16 +1,8 @@
 <template>
-  <div class="flex min-h-screen bg-gray-100 text-gray-900">
-    <!-- Sidebar / Toolbar -->
-    <Toolbar 
-      @go-home="goHome" 
-      @go-profile="goProfile" 
-      @logout="logout" 
-      class="bg-gray-900 text-white"
-    />
-
-    <!-- Contenido principal -->
+  <div class="flex min-h-screen">
+    <ToolbarAdmin @navigate="navigate" @logout="logout" />
     <main class="flex-1 p-6">
-      <h2 class="text-3xl font-bold mb-4">Panel de Administrador</h2>
+      <router-view />
     </main>
   </div>
 </template>
@@ -20,17 +12,16 @@ import Toolbar from '@/components/ToolbarAdmin.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 
-const authStore = useAuthStore()
 const router = useRouter()
 
-const goHome = () => console.log('Volver al inicio')
-const goProfile = () => console.log('Ir al perfil')
+const navigate = (section) => {
+  if (section === 'events') {
+    router.push('/admin/events')
+  }
+}
+
 const logout = () => {
-  authStore.logout()
+  localStorage.removeItem('token')
   router.push('/login')
 }
 </script>
-
-<style scoped>
-/* Opcional: que el toolbar ocupe toda la altura */
-</style>

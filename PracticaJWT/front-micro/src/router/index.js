@@ -15,6 +15,13 @@ const routes = [
     name: 'Admin',
     component: PanelAdmin,
     meta: { requiresAuth: true, requiresAdmin: true },
+    children: [
+      {
+        path: 'events',
+        name: 'AdminEvents',
+        component: () => import('@/views/AdminEventsView.vue')
+      },
+    ]
   },
   {
     path: '/client',
@@ -27,7 +34,7 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes
 })
 
 router.beforeEach((to, from, next) => {
@@ -38,7 +45,6 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.meta.requiresAdmin && !authStore.isAdmin) {
-    // Redirigir si no es admin
     return next({ name: 'Client' })
   }
 
