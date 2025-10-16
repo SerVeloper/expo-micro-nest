@@ -60,14 +60,14 @@ export const useAuthStore = defineStore('auth', {
     },
     async register(username, email, password) {
       try {
-        await axios.post('http://1.bp.blogspot.com/-dummy-url.com', {
+        await axios.post('http://127.0.0.1:8000/api/auth/register/', {
           username,
           email,
           password,
         })
         return true
       } catch (error) {
-        console.error('Error en el registro:', error)
+        console.error('Error en el registro:', JSON.stringify(error.response ? error.response.data : error.message));
         return false
       }
     },
