@@ -14,6 +14,25 @@
 
 <script setup>
 import ToolbarClient from '@/components/ToolbarClient.vue'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
+import { ref } from 'vue'
+
+const authStore = useAuthStore()
+const router = useRouter()
+
+const currentView = ref('events') // vista inicial
+
+const logout = () => {
+  authStore.logout()
+  router.push('/login')
+}
+
+// Manejo de navegación desde el toolbar
+const handleNavigate = (view) => {
+  if (view === 'events') currentView.value = 'events'
+  // puedes agregar más vistas aquí si activas los otros botones
+}
 </script>
 
 <style scoped>

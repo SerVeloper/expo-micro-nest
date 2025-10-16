@@ -41,7 +41,14 @@ const routes = [
         props: true
       }
     ]
+  },
+  {
+    path: '/client/orders',
+    name: 'MyOrders',
+    component: () => import('@/views/MyOrders.vue'),
+    meta: { requiresAuth: true, role: 'client' }
   }
+
 ]
 
 const router = createRouter({
