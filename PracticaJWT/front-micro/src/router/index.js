@@ -28,7 +28,19 @@ const routes = [
     name: 'Client',
     component: PanelClient,
     meta: { requiresAuth: true },
-    
+    children: [
+      {
+        path: 'events',
+        name: 'ClientEvents',
+        component: () => import('@/views/EventsClient.vue')
+      },
+      {
+        path: 'events/:id',
+        name: 'ClientEventDetail',
+        component: () => import('@/components/client/EventDetail.vue'),
+        props: true
+      }
+    ]
   }
 ]
 
