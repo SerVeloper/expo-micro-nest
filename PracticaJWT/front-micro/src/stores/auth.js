@@ -12,6 +12,18 @@ export const useAuthStore = defineStore('auth', {
     isAdmin: (state) => state.user?.roles?.includes('admin'),
   },
   actions: {
+    async initialize() {
+      if (this.token) {
+        try {
+          axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
+          const decodedToken = jwtDecode(this.token)
+          await this.fetchUser(decodedToken.user_id)
+        } catch (error) {
+          console.error('Error al inicializar:', error)
+          this.logout()
+        }
+      }
+    },
     async login(username, password) {
       try {
         const response = await axios.post('http://127.0.0.1:8000/api/auth/token/', {
@@ -48,7 +60,7 @@ export const useAuthStore = defineStore('auth', {
     },
     async register(username, email, password) {
       try {
-        await axios.post('http://127.0.0.1:8000/api/auth/register/', {
+        await axios.post('http://1.bp.blogspot.com/-dummy-url.com', {
           username,
           email,
           password,
