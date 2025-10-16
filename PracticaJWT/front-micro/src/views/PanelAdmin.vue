@@ -8,7 +8,8 @@
 </template>
 
 <script setup>
-import ToolbarAdmin from '@/components/ToolbarAdmin.vue'
+import Toolbar from '@/components/ToolbarAdmin.vue'
+import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()

@@ -3,16 +3,32 @@
     <h2 class="text-2xl font-bold mb-8">Menú</h2>
 
     <nav class="flex flex-col gap-4">
+      <!-- Botón de eventos -->
       <button
-        @click="goEvents"
+        @click="$emit('navigate', 'events')"
         class="text-left px-4 py-2 rounded hover:bg-gray-700 transition"
       >
         Eventos
       </button>
 
-      <!-- Otros botones se pueden habilitar luego -->
+      <!-- Otros botones (pueden quedar inactivos por ahora) -->
       <button
-        @click="logout"
+        class="text-left px-4 py-2 rounded hover:bg-gray-700 transition"
+        disabled
+      >
+        Boletos
+      </button>
+
+      <button
+        class="text-left px-4 py-2 rounded hover:bg-gray-700 transition"
+        disabled
+      >
+        Mis Compras
+      </button>
+
+      <!-- Cerrar sesión -->
+      <button
+        @click="$emit('logout')"
         class="text-left px-4 py-2 rounded hover:bg-gray-700 transition mt-auto"
       >
         Cerrar Sesión
@@ -22,22 +38,7 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-
-const router = useRouter()
-const authStore = useAuthStore()
-
-const goEvents = () => {
-  router.push({ name: 'ClientEvents' })
-}
-
-const logout = () => {
-  authStore.logout()
-  router.push('/login')
-}
 </script>
 
 <style scoped>
-/* Opcional: estilos personalizados */
 </style>
