@@ -15,6 +15,13 @@ const routes = [
     name: 'Admin',
     component: PanelAdmin,
     meta: { requiresAuth: true, requiresAdmin: true },
+    children: [
+      {
+        path: 'events',
+        name: 'AdminEvents',
+        component: () => import('@/views/AdminEventsView.vue')
+      },
+    ]
   },
   {
     path: '/client',
