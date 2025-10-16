@@ -21,7 +21,8 @@ const routes = [
     name: 'Client',
     component: PanelClient,
     meta: { requiresAuth: true },
-  },
+    
+  }
 ]
 
 const router = createRouter({
