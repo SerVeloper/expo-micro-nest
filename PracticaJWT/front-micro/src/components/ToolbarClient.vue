@@ -9,7 +9,14 @@
       >
         Eventos
       </button>
-
+      <button
+        
+        @click="navigateTo('orders')"
+        class="text-left px-4 py-2 rounded hover:bg-gray-700 transition"
+        :class="{ 'bg-gray-700': currentRoute === 'orders' }"
+      >
+        Mis Compras
+      </button>
       <!-- Otros botones se pueden habilitar luego -->
       <button
         @click="logout"
@@ -22,10 +29,12 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 
 const goEvents = () => {
@@ -36,6 +45,27 @@ const logout = () => {
   authStore.logout()
   router.push('/login')
 }
+
+// Determinar la ruta actual para resaltar el botón activo
+const currentRoute = computed(() => {
+  if (route.name === 'EventsClient' || route.name === 'EventDetail') {
+    return 'events'
+  } else if (route.name === 'MyOrders') {
+    return 'orders'
+  }
+  return ''
+})
+
+const navigateTo = (destination) => {
+  switch (destination) {
+    
+    case 'orders':
+      router.push('/client/orders')
+      break
+  }
+}
+
+defineEmits(['logout'])
 </script>
 
 <style scoped>

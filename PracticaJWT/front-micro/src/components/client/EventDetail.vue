@@ -14,7 +14,8 @@
 
     <div class="event-buttons">
       <button class="btn back" @click="goBack">Volver</button>
-      <button class="btn buy" disabled>Comprar</button>
+      <!-- <button class="btn buy" disabled>Comprar</button> -->
+      <button class="btn buy" @click="goToCreateOrder">Comprar</button>
     </div>
   </div>
 
@@ -72,6 +73,12 @@ const eventImage = images[Math.floor(Math.random() * images.length)]
 
 // 🔹 Navegar hacia atrás
 const goBack = () => router.back()
+// 🔹 Navegar a la página de creación de la orden                                                             
+const goToCreateOrder = () => {                                                                             
+   if (event.value) {                                                                                        
+     router.push({ name: 'CreateOrder', params: { eventId: event.value.id } })                               
+   }                                                                                                         
+ } 
 </script>
 
 <style scoped>
@@ -154,9 +161,10 @@ const goBack = () => router.back()
 .btn.buy {
   background-color: #007bff;
   color: #fff;
-  opacity: 0.6;
-  cursor: not-allowed;
 }
+.btn.buy:hover {                                                                                             
+    background-color: #0056b3;                                                                                 
+  }
 .loading {
   text-align: center;
   padding: 40px;

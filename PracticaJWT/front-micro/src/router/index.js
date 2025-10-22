@@ -39,9 +39,22 @@ const routes = [
         name: 'ClientEventDetail',
         component: () => import('@/components/client/EventDetail.vue'),
         props: true
+      },
+      {
+        path: 'events/:eventId/create-order',
+        name: 'CreateOrder',
+        component: () => import('@/components/client/CreateOrder.vue'),
+        props: true
       }
     ]
+  },
+  {
+    path: '/client/orders',
+    name: 'MyOrders',
+    component: () => import('@/views/MyOrders.vue'),
+    meta: { requiresAuth: true, role: 'client' }
   }
+
 ]
 
 const router = createRouter({
